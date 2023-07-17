@@ -1,11 +1,12 @@
 import re
 import time
 from selenium.webdriver.support import expected_conditions as EC
+from settings import email, password, url
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
-base_url = "https://petfriends.skillfactory.ru"
+base_url = url
 
 def test_petfriends(web_browser):
    driver = web_browser
@@ -24,12 +25,12 @@ def test_petfriends(web_browser):
    # подставить вместо "<your_email>" свой email.
    field_email = driver.find_element(By.ID, "email")
    field_email.clear()
-   field_email.send_keys("kramarenkoan562@gmail.com")
+   field_email.send_keys(email)
 
    # То же самое для поля с паролем
    field_pass = driver.find_element(By.ID, "pass")
    field_pass.clear()
-   field_pass.send_keys("qwertyuio27")
+   field_pass.send_keys(password)
 
    # Ищем кнопку "Войти" и нажимаем на нее
    btn_submit = driver.find_element(By.XPATH, "//button[@type='submit']")
