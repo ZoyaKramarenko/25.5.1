@@ -1,7 +1,9 @@
 import re
 import time
+from selenium.webdriver.support import expected_conditions as EC
 
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
 
 base_url = "https://petfriends.skillfactory.ru"
 
@@ -9,8 +11,6 @@ def test_petfriends(web_browser):
    driver = web_browser
    # Открыть домашнюю страницу PetFriends:
    driver.get(base_url)
-
-   time.sleep(2)  # небольшая задержка, чисто ради эксперимента
 
    # Находим кнопку "Зарегистрироваться" и нажимаем на нее
    btn_newuser = driver.find_element(By.XPATH, "//button[@onclick=\"document.location='/new_user';\"]")
@@ -35,24 +35,25 @@ def test_petfriends(web_browser):
    btn_submit = driver.find_element(By.XPATH, "//button[@type='submit']")
    btn_submit.click()
 
-   time.sleep(3)  # небольшая задержка, чисто ради эксперимента
-
    # Ищем элемент меню "Мои питомцы" и нажимаем на него
    btn_submit = driver.find_element(By.XPATH, '//*[@id="navbarNav"]/ul[1]/li[1]/a[1]')
    btn_submit.click()
 
-   time.sleep(2)
-
    # Находим количество питомцев из статистики пользователя
-   element_user_statistic = driver.find_element(By.CSS_SELECTOR, 'div.left')
+   element_user_statistic = WebDriverWait(driver, 10).until(
+      EC.visibility_of_element_located((By.CSS_SELECTOR, "div.left"))
+   )
    count_pets = int(re.findall(r'Питомцев: \d*', element_user_statistic.text)[0].split(' ')[1])
 
-   pets = driver.find_elements(By.CSS_SELECTOR, '#all_my_pets .table tbody tr')
+   pets = WebDriverWait(driver, 10).until(
+      EC.presence_of_all_elements_located((By.CSS_SELECTOR, '#all_my_pets .table tbody tr'))
+   )
    count_pets_in_table = len(pets)
    # Проверяем соответствие количества питомцев из статистики пользователя количеству питомцев в таблице
    assert count_pets == count_pets_in_table
 
    # Находим количество картинок
+   driver.implicitly_wait(10)
    images = driver.find_elements(By.CSS_SELECTOR, '#all_my_pets .table tbody tr img')
    count_images = 0
    i=0
